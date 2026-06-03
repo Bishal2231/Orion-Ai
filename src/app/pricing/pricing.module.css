@@ -1,0 +1,209 @@
+.page {
+  padding-bottom: 40px;
+}
+
+.hero {
+  padding: 80px 0 40px;
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  margin: 20px 0 16px;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.plansSection {
+  padding: 40px 0 60px;
+}
+
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.planCard {
+  display: flex;
+  flex-direction: column;
+  padding: 36px 28px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.planCard:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow);
+}
+
+.planPopular {
+  border-color: var(--accent-blue);
+  background: white;
+  box-shadow: 0 4px 30px rgba(59, 124, 255, 0.12);
+}
+
+.planPopular:hover {
+  box-shadow: 0 8px 40px rgba(59, 124, 255, 0.18);
+}
+
+.planBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--accent-purple);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.planBadgePopular {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+}
+
+.planName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.planPrice {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.priceValue {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pricePeriod {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.planDesc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.planFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 32px;
+  flex: 1;
+}
+
+.planFeature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.planFeature svg {
+  color: var(--accent-green);
+  flex-shrink: 0;
+}
+
+/* ---- Comparison Table ---- */
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.comparisonTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+  padding: 14px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comparisonTable th {
+  background: var(--bg-tertiary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.comparisonTable td {
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+}
+
+.comparisonTable td:first-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.thHighlight {
+  color: var(--accent-blue) !important;
+}
+
+.tdHighlight {
+  color: var(--accent-blue) !important;
+  font-weight: 600;
+}
+
+.comparisonTable tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.comparisonTable tbody tr:hover td {
+  background: rgba(59, 124, 255, 0.03);
+}
+
+.comparisonTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .plansGrid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

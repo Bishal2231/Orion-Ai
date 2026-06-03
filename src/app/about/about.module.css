@@ -1,0 +1,236 @@
+.page {
+  padding-bottom: 40px;
+}
+
+.hero {
+  padding: 80px 0 40px;
+}
+
+.hero .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.heroContent {
+  flex: 1;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  margin: 20px 0 16px;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 540px;
+}
+
+.heroImage {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.heroImageGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.08), transparent 60%);
+  pointer-events: none;
+}
+
+.heroImg {
+  border-radius: 50%;
+  box-shadow: 0 8px 40px rgba(124, 58, 237, 0.15);
+  animation: float 6s ease-in-out infinite;
+  position: relative;
+}
+
+/* Architecture */
+.archGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.archCard {
+  padding: 32px;
+  background: var(--bg-secondary);
+}
+
+.archIcon {
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.archCard h3 {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+}
+
+.archCard p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Benchmarks */
+.benchmarkTable {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.benchmarkTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.benchmarkTable th,
+.benchmarkTable td {
+  padding: 16px 24px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.benchmarkTable th {
+  background: var(--bg-tertiary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.thOrion {
+  color: var(--accent-blue) !important;
+}
+
+.benchName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Geist Mono', monospace;
+}
+
+.benchOrion {
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.benchmarkTable td {
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+}
+
+.benchmarkTable tbody tr:hover td {
+  background: rgba(59, 124, 255, 0.03);
+}
+
+.benchmarkTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-left: 40px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple), rgba(124, 58, 237, 0.1));
+}
+
+.timelineItem {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.timelineDot {
+  position: absolute;
+  left: -33px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(59, 124, 255, 0.3);
+}
+
+.timelineContent h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.timelineContent p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.timelineYear {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-purple);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Values */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.valueCard {
+  padding: 32px;
+  background: var(--bg-secondary);
+}
+
+.valueIcon {
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.valueCard h3 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.valueCard p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .hero .container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .archGrid,
+  .valuesGrid {
+    grid-template-columns: 1fr;
+  }
+}
