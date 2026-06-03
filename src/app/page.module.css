@@ -11,7 +11,7 @@
   position: relative;
   overflow: hidden;
   padding: 60px 24px;
-  background: linear-gradient(180deg, #f0f4ff 0%, var(--bg-primary) 100%);
+  background: linear-gradient(180deg, rgba(240, 244, 255, 0.4) 0%, transparent 100%);
 }
 
 .heroGlow {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import styles from './chat.module.css';
 
 interface Message {
@@ -158,7 +159,9 @@ export default function ChatPage() {
               className={`${styles.message} ${msg.role === 'user' ? styles.messageUser : styles.messageAssistant}`}
             >
               <div className={styles.messageAvatar}>
-                {msg.role === 'user' ? '👤' : '✦'}
+                {msg.role === 'user' ? '👤' : (
+                  <Image src="/orion-logo.png" alt="Orion" width={24} height={24} style={{ borderRadius: '50%' }} />
+                )}
               </div>
               <div className={styles.messageBubble}>
                 <div className={styles.messageContent}>
@@ -173,7 +176,9 @@ export default function ChatPage() {
 
           {isLoading && (
             <div className={`${styles.message} ${styles.messageAssistant}`}>
-              <div className={styles.messageAvatar}>✦</div>
+              <div className={styles.messageAvatar}>
+                <Image src="/orion-logo.png" alt="Orion" width={24} height={24} style={{ borderRadius: '50%' }} />
+              </div>
               <div className={styles.messageBubble}>
                 <div className={styles.typingIndicator}>
                   <span className={styles.typingDot} />
