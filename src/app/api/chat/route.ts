@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { prompt } = await req.json();
+    const { prompt, model = 'orion' } = await req.json();
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'orion',
+        model,
         prompt,
         stream: true,
       }),
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
             await Chat.create({
               prompt,
               response: fullResponse,
-              aiModel: 'orion-v1'
+              aiModel: model
             });
           } catch (dbError) {
             console.error('Failed to save chat to database:', dbError);

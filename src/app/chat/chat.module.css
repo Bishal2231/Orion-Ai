@@ -71,6 +71,22 @@
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+.modelSelect {
+  background: var(--bg-primary, transparent);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+}
+.modelSelect:focus {
+  border-color: var(--accent-blue);
+}
+
 .modelName {
   font-weight: 700;
   font-size: 0.9rem;
@@ -290,6 +306,25 @@
   box-shadow: var(--shadow-sm);
 }
 
+.inputModelSelect {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  padding: 8px 4px;
+  margin-bottom: 2px;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inputModelSelect:hover {
+  color: var(--text-primary);
+}
+
 .inputWrapper:focus-within {
   border-color: var(--accent-blue);
   box-shadow: 0 0 0 3px rgba(59, 124, 255, 0.1);
@@ -350,4 +385,127 @@
   .message {
     max-width: 90%;
   }
+}
+
+.copyButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a3a3a3;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.copyButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* ---- Markdown Styling ---- */
+.messageContent h1,
+.messageContent h2,
+.messageContent h3,
+.messageContent h4 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.messageContent h1 { font-size: 1.5rem; }
+.messageContent h2 { font-size: 1.25rem; }
+.messageContent h3 { font-size: 1.1rem; }
+
+.messageContent p {
+  margin-bottom: 1rem;
+}
+.messageContent p:last-child {
+  margin-bottom: 0;
+}
+
+.messageContent ul, 
+.messageContent ol {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.messageContent li {
+  margin-bottom: 0.25rem;
+}
+
+.messageContent strong {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.messageContent blockquote {
+  border-left: 4px solid var(--accent-purple);
+  padding-left: 1rem;
+  color: var(--text-secondary);
+  background: rgba(124, 58, 237, 0.05);
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ---- Collapsible Accordions (details/summary) ---- */
+.messageContent details {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+}
+
+.messageContent summary {
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  color: var(--text-primary);
+  margin: -0.5rem -1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  transition: background 0.2s;
+}
+
+.messageContent summary:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.messageContent details[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+/* ---- Action Chips (Follow-up prompts) ---- */
+.actionChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.actionChip {
+  background: rgba(59, 124, 255, 0.08);
+  border: 1px solid rgba(59, 124, 255, 0.2);
+  color: var(--accent-blue);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.actionChip:hover {
+  background: rgba(59, 124, 255, 0.15);
+  transform: translateY(-1px);
 }

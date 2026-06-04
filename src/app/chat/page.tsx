@@ -1,8 +1,26 @@
-'use client';
+ 'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import styles from './chat.module.css';
+
+const CopyIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+);
 
 interface Message {
   id: string;
@@ -10,6 +28,69 @@ interface Message {
   content: string;
   timestamp: Date;
 }
+
+const CodeBlock = ({ node, className, children, ...props }: any) => {
+  const match = /language-(\w+)/.exec(className || '');
+  const language = match ? match[1] : 'text';
+  const isInline = !match && !String(children).includes('\n');
+  
+  const [copied, setCopied] = useState(false);
+  const codeString = String(children).replace(/\n$/, '');
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(codeString);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (isInline) {
+    return (
+      <code {...props} className={className}>
+        {children}
+      </code>
+    );
+  }
+
+  return (
+    <div style={{ position: 'relative', marginTop: '1rem', marginBottom: '1rem', borderRadius: '6px', overflow: 'hidden', border: '1px solid #333' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        background: '#1e1e1e',
+        color: '#a3a3a3',
+        padding: '6px 12px',
+        fontSize: '0.75rem',
+        fontFamily: 'sans-serif',
+        borderBottom: '1px solid #333'
+      }}>
+        <span style={{ textTransform: 'uppercase' }}>{language}</span>
+        <button
+          onClick={handleCopy}
+          className={styles.copyButton}
+        >
+          {copied ? (
+            <>
+              <CheckIcon /> Copied!
+            </>
+          ) : (
+            <>
+              <CopyIcon /> Copy
+            </>
+          )}
+        </button>
+      </div>
+      <SyntaxHighlighter
+        {...props}
+        PreTag="div"
+        children={codeString}
+        language={language}
+        style={vscDarkPlus}
+        customStyle={{ margin: 0, borderRadius: 0 }}
+      />
+    </div>
+  );
+};
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -22,6 +103,8 @@ export default function ChatPage() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [selectedModel, setSelectedModel] = useState('orion');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -33,25 +116,30 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (quickPrompt?: string) => {
+    const promptToSend = quickPrompt || input.trim();
+    if (!promptToSend || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input.trim(),
+      content: promptToSend,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+    if (!quickPrompt) setInput('');
     setIsLoading(true);
+
+    const controller = new AbortController();
+    setAbortController(controller);
 
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userMessage.content }),
+        body: JSON.stringify({ prompt: userMessage.content, model: selectedModel }),
+        signal: controller.signal,
       });
 
       if (!res.ok) throw new Error('Network response was not ok');
@@ -89,14 +177,28 @@ export default function ChatPage() {
           );
         }
       }
-    } catch {
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Unable to connect to the Orion server. Please ensure the service is running and try again.',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setAbortController(null);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Request aborted by user');
+      } else {
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Unable to connect to the Orion server. Please ensure the service is running and try again.',
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+      }
+      setIsLoading(false);
+      setAbortController(null);
+    }
+  };
+
+  const handleStop = () => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
       setIsLoading(false);
     }
   };
@@ -142,7 +244,7 @@ export default function ChatPage() {
           <div className={styles.modelInfo}>
             <div className={styles.modelDot} />
             <div>
-              <div className={styles.modelName}>Orion v1.0</div>
+              <div className={styles.modelName}>Orion System</div>
               <div className={styles.modelStatus}>Online • Ready</div>
             </div>
           </div>
@@ -177,7 +279,7 @@ export default function ChatPage() {
         </div>
 
         <div className={styles.messagesContainer}>
-          {messages.map((msg) => (
+          {messages.map((msg, index) => (
             <div
               key={msg.id}
               className={`${styles.message} ${msg.role === 'user' ? styles.messageUser : styles.messageAssistant}`}
@@ -189,11 +291,34 @@ export default function ChatPage() {
               </div>
               <div className={styles.messageBubble}>
                 <div className={styles.messageContent}>
-                  {msg.content}
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                      code: CodeBlock
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
                 </div>
                 <div className={styles.messageTime}>
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
+
+                {/* Follow-up chips for the latest AI message containing code */}
+                {msg.role === 'assistant' && index === messages.length - 1 && !isLoading && msg.content.includes('```') && (
+                  <div className={styles.actionChips}>
+                    <button className={styles.actionChip} onClick={() => handleSend('Explain this code step-by-step')}>
+                      Explain step-by-step
+                    </button>
+                    <button className={styles.actionChip} onClick={() => handleSend('Add error handling to this')}>
+                      Add error handling
+                    </button>
+                    <button className={styles.actionChip} onClick={() => handleSend('Write a unit test for this function')}>
+                      Write unit test
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -228,16 +353,39 @@ export default function ChatPage() {
               rows={1}
               id="chat-input"
             />
-            <button
-              className={styles.sendBtn}
-              onClick={handleSend}
-              disabled={!input.trim() || isLoading}
-              id="send-button"
+            <select 
+              className={styles.inputModelSelect} 
+              value={selectedModel} 
+              onChange={(e) => setSelectedModel(e.target.value)}
+              title="Select Model"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-              </svg>
-            </button>
+              <option value="orion">Orion Lite - Best at Communication</option>
+              <option value="qwen3:4b">Orion Prime - Best at Coding</option>
+            </select>
+            {isLoading ? (
+              <button
+                className={styles.sendBtn}
+                onClick={handleStop}
+                id="stop-button"
+                title="Stop generating"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="6" y="6" width="12" height="12" rx="2" ry="2" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                className={styles.sendBtn}
+                onClick={() => handleSend()}
+                disabled={!input.trim()}
+                id="send-button"
+                title="Send message"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                </svg>
+              </button>
+            )}
           </div>
           <p className={styles.disclaimer}>
             Orion can make mistakes. Verify important information.
