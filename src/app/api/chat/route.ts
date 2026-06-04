@@ -2,8 +2,43 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '../../../lib/mongoose';
 import Chat from '../../../models/Chat';
 
+const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 5;
+
+  const record = rateLimitMap.get(ip);
+  if (!record) {
+    rateLimitMap.set(ip, { count: 1, lastReset: now });
+    return true;
+  }
+
+  if (now - record.lastReset > windowMs) {
+    record.count = 1;
+    record.lastReset = now;
+    return true;
+  }
+
+  if (record.count >= maxRequests) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
+
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || 'anonymous';
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment before sending another message.' },
+        { status: 429 }
+      );
+    }
+
     const { prompt } = await req.json();
 
     if (!prompt || typeof prompt !== 'string') {
