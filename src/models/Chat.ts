@@ -5,6 +5,7 @@ export interface IChat extends Document {
   response: string;
   aiModel: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const ChatSchema: Schema = new Schema(
