@@ -77,7 +77,8 @@ export async function POST(req: NextRequest) {
         } catch (error) {
           controller.error(error);
         } finally {
-          controller.close();
+          // Save to database BEFORE closing the controller.
+          // This prevents Next.js from terminating the function before the save finishes.
           try {
             await dbConnect();
             await Chat.create({
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
           } catch (dbError) {
             console.error('Failed to save chat to database:', dbError);
           }
+          controller.close();
         }
       }
     });
