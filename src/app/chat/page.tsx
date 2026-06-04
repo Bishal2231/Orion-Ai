@@ -54,16 +54,41 @@ export default function ChatPage() {
         body: JSON.stringify({ prompt: userMessage.content }),
       });
 
-      const data = await res.json();
+      if (!res.ok) throw new Error('Network response was not ok');
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.answer || 'I apologize, but I encountered an issue processing your request. Please try again.',
-        timestamp: new Date(),
-      };
+      const assistantMessageId = (Date.now() + 1).toString();
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: '',
+          timestamp: new Date(),
+        },
+      ]);
+      
+      // Hide the wave typing indicator once the stream starts
+      setIsLoading(false);
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value, { stream: true });
+          
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMessageId
+                ? { ...msg, content: msg.content + chunk }
+                : msg
+            )
+          );
+        }
+      }
     } catch {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -72,7 +97,6 @@ export default function ChatPage() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
-    } finally {
       setIsLoading(false);
     }
   };

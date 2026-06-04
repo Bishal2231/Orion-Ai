@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '../../../lib/mongoose';
+import Chat from '../../../models/Chat';
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,25 +22,80 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: 'orion',
         prompt,
-        stream: false,
+        stream: true,
       }),
     });
 
-    if (!response.ok) {
+    if (!response.ok || !response.body) {
       return NextResponse.json(
         { error: 'Failed to get a response from the Orion engine. Please ensure the service is running.' },
         { status: 502 }
       );
     }
 
-    const data = await response.json();
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    let fullResponse = '';
 
-    return NextResponse.json({
-      answer: data.response,
-      model: 'orion-v1',
-      usage: {
-        prompt_tokens: prompt.split(/\s+/).length,
-        completion_tokens: data.response?.split(/\s+/).length || 0,
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = response.body!.getReader();
+        let buffer = '';
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              try {
+                const parsed = JSON.parse(line);
+                if (parsed.response) {
+                  fullResponse += parsed.response;
+                  controller.enqueue(encoder.encode(parsed.response));
+                }
+              } catch (e) {
+                // Ignore parse errors on incomplete chunks
+              }
+            }
+          }
+
+          if (buffer.trim()) {
+            try {
+              const parsed = JSON.parse(buffer);
+              if (parsed.response) {
+                fullResponse += parsed.response;
+                controller.enqueue(encoder.encode(parsed.response));
+              }
+            } catch (e) {}
+          }
+        } catch (error) {
+          controller.error(error);
+        } finally {
+          controller.close();
+          try {
+            await dbConnect();
+            await Chat.create({
+              prompt,
+              response: fullResponse,
+              model: 'orion-v1'
+            });
+          } catch (dbError) {
+            console.error('Failed to save chat to database:', dbError);
+          }
+        }
+      }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
       },
     });
   } catch (error) {
