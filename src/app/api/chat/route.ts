@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
             await Chat.create({
               prompt,
               response: fullResponse,
-              model: 'orion-v1'
+              aiModel: 'orion-v1'
             });
           } catch (dbError) {
             console.error('Failed to save chat to database:', dbError);
@@ -108,3 +108,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+// 
