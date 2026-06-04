@@ -239,23 +239,34 @@
 .typingIndicator {
   display: flex;
   gap: 6px;
-  padding: 4px 0;
+  padding: 8px 4px;
+  align-items: center;
+  height: 24px;
 }
 
 .typingDot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: var(--accent-purple);
   border-radius: 50%;
-  animation: typing-dot 1.4s ease-in-out infinite;
+  animation: wave 1.2s ease-in-out infinite;
 }
 
 .typingDot:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0.15s;
 }
 
 .typingDot:nth-child(3) {
-  animation-delay: 0.4s;
+  animation-delay: 0.3s;
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 /* ---- Input Area ---- */
