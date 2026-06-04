@@ -360,7 +360,7 @@ export default function ChatPage() {
               title="Select Model"
             >
               <option value="orion">Orion Lite - Best at Communication</option>
-              <option value="qwen3:4b">Orion Prime - Best at Coding</option>
+              <option value="orion:prime">Orion Prime - Best at Coding</option>
             </select>
             {isLoading ? (
               <button
