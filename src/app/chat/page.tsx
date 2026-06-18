@@ -185,7 +185,20 @@ export default function ChatPage() {
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: 'Unable to connect to the Orion server. Please ensure the service is running and try again.',
+          content: `> ⚠️ **Service Unavailable**
+
+This project was **temporarily built as a learning exercise** to explore the deployment of Large Language Models (LLMs) using a **Google Cloud VPS**.
+
+The cloud server that powered Orion's inference engine has since been **decommissioned**, so live AI responses are no longer available.
+
+---
+
+**What was this project?**
+- A full-stack LLM chat interface built with Next.js
+- Self-hosted **Ollama** running custom fine-tuned models on a Google Cloud Compute Engine instance
+- Designed to learn real-world deployment patterns: streaming responses, rate limiting, model management, and cloud infrastructure
+
+> 💡 The source code is still fully functional — if you spin up an Ollama instance locally, this chat will work out of the box!`,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, errorMessage]);
@@ -242,10 +255,10 @@ export default function ChatPage() {
         </div>
         <div className={styles.sidebarInfo}>
           <div className={styles.modelInfo}>
-            <div className={styles.modelDot} />
+            <div className={styles.modelDot} style={{ background: '#ef4444', boxShadow: '0 0 8px rgba(239,68,68,0.4)' }} />
             <div>
               <div className={styles.modelName}>Orion System</div>
-              <div className={styles.modelStatus}>Online • Ready</div>
+              <div className={styles.modelStatus} style={{ color: '#ef4444' }}>Offline • VPS Removed</div>
             </div>
           </div>
         </div>
