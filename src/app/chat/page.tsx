@@ -355,6 +355,17 @@ The cloud server that powered Orion's inference engine has since been **decommis
         </div>
 
         <div className={styles.inputArea}>
+          <div className={styles.modelSelectorBar}>
+            <select 
+              className={styles.modelSelectPill} 
+              value={selectedModel} 
+              onChange={(e) => setSelectedModel(e.target.value)}
+              title="Select Model"
+            >
+              <option value="orion">Orion Lite - Best at Communication</option>
+              <option value="orion:prime">Orion Prime - Best at Coding</option>
+            </select>
+          </div>
           <div className={styles.inputWrapper}>
             <textarea
               ref={inputRef}
@@ -366,15 +377,6 @@ The cloud server that powered Orion's inference engine has since been **decommis
               rows={1}
               id="chat-input"
             />
-            <select 
-              className={styles.inputModelSelect} 
-              value={selectedModel} 
-              onChange={(e) => setSelectedModel(e.target.value)}
-              title="Select Model"
-            >
-              <option value="orion">Orion Lite - Best at Communication</option>
-              <option value="orion:prime">Orion Prime - Best at Coding</option>
-            </select>
             {isLoading ? (
               <button
                 className={styles.sendBtn}
